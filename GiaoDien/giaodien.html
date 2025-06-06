@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart City</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('clock').textContent = timeString;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div><img src="logo.jpg" alt="Logo" class="logo"/></div>
+    <div class="title">Final Project</div>
+    <div id="clock"></div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Left Column -->
+    <div class="left">
+               <div>
+            <video autoplay muted loop>
+            <source src="mov_bbb.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+        </div>
+         <div class="sensor-device-row">
+            <div class="sensor-box">
+            <img src="nhietdo1.png" alt="Sensor 1" class="sensor-img">
+            <div id="nhietdo" class="thongso">-- °C</div>
+            </div>
+            <div class="device-control">
+            <img id="call" src="quattat.png" alt="Call" class="device-img">
+            <div class="buttons">
+                <button type="button" id="btn1">On</button>
+                <button type="button" id="btn2">Off</button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Hàng 2 -->
+        <div class="sensor-device-row">
+            <div class="sensor-box">
+            <img src="doam1.png" alt="Sensor 2" class="sensor-img">
+            <div id="doam" class="thongso"></div>
+            </div>
+            <div class="device-control">
+            <img id="led" src="den1.png" alt="led" class="device-img">
+            <div class="buttons">
+                <button type="button" id="btn3">On</button>
+                <button type="button" id="btn4">Off</button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Hàng 3 -->
+        <div class="sensor-device-row">
+            <div class="sensor-box">
+            <img src="gas.png" alt="Sensor 3" class="sensor-img">
+            <div id="gas" class="thongso"></div>
+            </div>
+            <div class="device-control">
+            <img id="tv" src="tivitat.jpg" alt="tv" class="device-img">
+            <div class="buttons">
+                <button type="button" id="btn5">On</button>
+                <button type="button" id="btn6">Off</button>
+            </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Center Column -->
+    <div class="center" id="bot">
+      <div class="chart">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right">
+      <div class="image">
+        <img src="image.jpg" alt="Image" class="content-image"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="member-list">
+      <div class="member">
+        <img src="avt1.png" alt="Nguyễn Hoàng Diễm Chi" class="avatar" />
+        <div class="info">
+          <div class="name">Nguyễn Hoàng Diễm Chi</div>
+          <div class="id">MSSV: 22161004</div>
+        </div>
+      </div>
+      <div class="member">
+        <img src="avt3.jpg" alt="Nguyễn Thanh Tuyền" class="avatar" />
+        <div class="info">
+          <div class="name">Nguyễn Thanh Tuyền</div>
+          <div class="id">MSSV: 22161042</div>
+        </div>
+      </div>
+      <div class="member">
+        <img src="avt2.jpg" alt="Nguyễn Đình Khánh Vy" class="avatar" />
+        <div class="info">
+          <div class="name">Nguyễn Đình Khánh Vy</div>
+          <div class="id">MSSV: 22161043</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-analytics.js"></script>
+
+  <!-- Firebase Configuration -->
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyC7gBOAVzffQN3s0iDjm3yOwOXjgv2_pUs",
+      authDomain: "iot-lt-2cecc.firebaseapp.com",
+      databaseURL: "https://iot-lt-2cecc-default-rtdb.firebaseio.com",
+      projectId: "iot-lt-2cecc",
+      storageBucket: "iot-lt-2cecc.appspot.com",
+      messagingSenderId: "834258056413",
+      appId: "1:834258056413:web:d4109cb2eac95b0c3b9734",
+      measurementId: "G-ZGE7YP6Q33"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+
+  <!-- Sensor Real-time Data -->
+    <script>
+        var nhietDo = document.getElementById('nhietdo');
+        var dbRef = firebase.database().ref('sensor').child('temperature');  
+        var doAm = document.getElementById('doam');
+        var dbRef2 = firebase.database().ref('sensor').child('humidity');
+        var gas = document.getElementById('gas');
+        var dbRef3 = firebase.database().ref('sensor').child('gas');
+        var distance = document.getElementById('Distance');
+        var dbRef4 = firebase.database().ref('sensor').child('distance');
+        dbRef.on('value', snap => nhietDo.innerText = snap.val());
+        dbRef2.on('value', snap => doAm.innerText = snap.val());
+        dbRef3.on('value', snap => gas.innerText = snap.val());
+        dbRef4.on('value', snap => distance.innerText = snap.val());
+    </script>
+
+  <!-- Chart.js Real-time Line Chart -->
+  <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const timeLabels = [];
+    const tempData = [];
+    const humidData = [];
+
+    const myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: timeLabels,
+        datasets: [
+          {
+            label: 'Nhiệt độ (°C)',
+            data: tempData,
+            borderColor: 'red',
+            fill: false,
+            tension: 0.1
+          },
+          {
+            label: 'Độ ẩm (%)',
+            data: humidData,
+            borderColor: 'blue',
+            fill: false,
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Thời gian'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Giá trị'
+            }
+          }
+        }
+      }
+    });
+
+    function addDataPoint(temp, humid) {
+      const now = new Date();
+      const label = now.toLocaleTimeString();
+
+      if (timeLabels.length > 20) {
+        timeLabels.shift();
+        tempData.shift();
+        humidData.shift();
+      }
+
+      timeLabels.push(label);
+      tempData.push(temp);
+      humidData.push(humid);
+      myChart.update();
+    }
+
+    setInterval(() => {
+      firebase.database().ref('sensor/temperature').once('value').then(snapshotTemp => {
+        firebase.database().ref('sensor/humidity').once('value').then(snapshotHumid => {
+          const temp = parseFloat(snapshotTemp.val());
+          const humid = parseFloat(snapshotHumid.val());
+          if (!isNaN(temp) && !isNaN(humid)) {
+            addDataPoint(temp, humid);
+          }
+        });
+      });
+    }, 8000);
+  </script>
+  <script>
+  // Quạt
+  document.getElementById("btn1").onclick = function () {
+    document.getElementById("call").src = "quatbat.gif";
+    firebase.database().ref("thietbigiadung/quat").set("1");
+  };
+  document.getElementById("btn2").onclick = function () {
+    document.getElementById("call").src = "quattat.png";
+    firebase.database().ref("thietbigiadung/quat").set("0");
+  };
+
+  // Đèn
+  document.getElementById("btn3").onclick = function () {
+    document.getElementById("led").src = "denon1.gif";
+    firebase.database().ref("thietbigiadung/led").set("1");
+  };
+  document.getElementById("btn4").onclick = function () {
+    document.getElementById("led").src = "den1.png";
+    firebase.database().ref("thietbigiadung/led").set("0");
+  };
+
+  // TV
+  document.getElementById("btn5").onclick = function () {
+    document.getElementById("tv").src = "tivibat.jpg";
+    firebase.database().ref("thietbigiadung/tv").set("1");
+  };
+  document.getElementById("btn6").onclick = function () {
+    document.getElementById("tv").src = "tivitat.jpg";
+    firebase.database().ref("thietbigiadung/tv").set("0");
+  };
+</script>
+
+</body>
+</html>
